@@ -4,7 +4,7 @@
             <slot></slot>
         </div>
         <div class="dots">
-            <!--<span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots"></span>-->
+            <span class="dot" :class="{active: currentPageIndex === index }" v-for="(item, index) in dots"></span>
         </div>
     </div>
 </template>
@@ -36,11 +36,11 @@
         mounted() {
             setTimeout(() => {
                 this._setSliderWidth()
-//                this._initDots()
+                this._initDots()
                 this._initSlider()
-//                if (this.autoPlay) {
-//                    this._play()
-//                }
+                if (this.autoPlay) {
+                    this._play()
+                }
             }, 20)
         },
         methods:{
@@ -58,6 +58,9 @@
                     width += 2 * sliderWidth
                 }
                 this.$refs.sliderGroup.style.width = width + 'px'
+            },
+            _initDots() {
+                this.dots = new Array(this.children.length)
             },
             _initSlider() {
                 this.slider = new BScroll(this.$refs.slider, {
@@ -80,6 +83,16 @@
                         clearTimeout(this.timer)
                     }
                 })
+            },
+            _onScrollEnd() {
+                let pageIndex = this.slider.getCurrentPage().pageX
+                if (this.loop) {
+                    pageIndex -= 1
+                }
+                this.currentPageIndex = pageIndex
+                if (this.autoPlay) {
+                    this._play()
+                }
             },
             _play() {
                 let pageIndex = this.currentPageIndex + 1

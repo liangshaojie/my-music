@@ -61,6 +61,7 @@
                 })
                 if (this.listenScroll) {
                     this.scroll.on('scroll', (pos) => {
+                        console.log(pos.x + '~' + pos.y)
                         this.$emit('scroll', pos)
                     })
                 }
