@@ -9,6 +9,12 @@ const Recommend = (resolve) => {
     })
 }
 
+const useMap = (resolve) => {
+    import('./../components/useMap/useMap').then((module) => {
+        resolve(module)
+    })
+}
+
 
 export default new Router({
     routes: [
@@ -20,5 +26,9 @@ export default new Router({
             path: '/recommend',
             component: Recommend
         },
+        {
+            path: '/useMap',
+            component: useMap
+        }
     ]
 })

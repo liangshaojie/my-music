@@ -1,7 +1,7 @@
 <template>
     <div id="app" @touchmove.prevent>
-        <m-header></m-header>
-        <tab></tab>
+        <!--<m-header></m-header>-->
+        <!--<tab></tab>-->
         <router-view></router-view>
     </div>
 </template>
