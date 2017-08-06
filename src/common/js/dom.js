@@ -19,9 +19,8 @@ export function getData(el, name, val) {
     }
     return el.getAttribute(prefix + name)
 }
-
+//检测浏览器
 let elementStyle = document.createElement('div').style
-
 let vendor = (() => {
     let transformNames = {
         webkit: 'webkitTransform',
@@ -37,7 +36,6 @@ let vendor = (() => {
     }
     return false
 })()
-
 export function prefixStyle(style) {
     if (vendor === false) {
         return false
