@@ -1,10 +1,10 @@
 <template>
     <div class="recommend">
-        <scroll  ref="scroll" class="recommend-content" :data="discList">
+        <scroll ref="scroll" class="recommend-content" :data="discList">
             <div>
                 <div class="slider-wrapper">
                     <div class="slider-content">
-                        <slider v-if="recommends.length"  ref="slider">
+                        <slider v-if="recommends.length" ref="slider">
                             <div v-for="item in recommends">
                                 <a :href="item.linkUrl">
                                     <img class="needsclick" @load="loadImage" :src="item.picUrl">
@@ -32,6 +32,7 @@
                 <loading></loading>
             </div>
         </scroll>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -41,9 +42,10 @@
     import {getRecommend, getDiscList} from '../../api/recommend'
     import {ERR_OK} from '../../api/config'
     import Scroll from '../../base/scroll/scroll'
+    import {mapMutations} from 'vuex'
 
     export default {
-        components: {Loading,Scroll,Slider},
+        components: {Loading, Scroll, Slider},
         data() {
             return {
                 recommends: [],
@@ -55,6 +57,9 @@
             this._getDiscList()
         },
         methods: {
+            ...mapMutations({
+                setDisc: 'SET_DISC'
+            }),
             //获取列表
             _getRecommend() {
                 getRecommend().then((res) => {
@@ -78,6 +83,12 @@
                     }, 20)
                 }
             },
+            selectItem(item) {
+                this.$router.push({
+                    path: `/recommend/${item.dissid}`
+                })
+                this.setDisc(item)
+            }
         }
     }
 </script>

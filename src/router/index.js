@@ -8,9 +8,15 @@ const Recommend = (resolve) => {
         resolve(module)
     })
 }
-
+//测试map用的
 const useMap = (resolve) => {
     import('./../components/useMap/useMap').then((module) => {
+        resolve(module)
+    })
+}
+
+const Disc = (resolve) => {
+    import('./../components/disc/disc').then((module) => {
         resolve(module)
     })
 }
@@ -24,7 +30,13 @@ export default new Router({
         },
         {
             path: '/recommend',
-            component: Recommend
+            component: Recommend,
+            children: [
+                {
+                    path: ':id',
+                    component: Disc
+                }
+            ]
         },
         {
             path: '/useMap',
