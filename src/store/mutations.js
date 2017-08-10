@@ -22,5 +22,8 @@ const mutations = {
     [types.SET_PLAYING_STATE](state, flag) {
         state.playing = flag
     },
+    [types.SET_PLAY_HISTORY](state, history) {
+        state.playHistory = history
+    },
 }
 export default mutations

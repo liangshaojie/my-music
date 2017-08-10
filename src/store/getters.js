@@ -6,3 +6,5 @@ export const favoriteList = state => state.favoriteList
 export const currentSong = (state) => {
     return state.playlist[state.currentIndex] || {}
 }
+export const fullScreen = state => state.fullScreen
+export const playing = state => state.playing
