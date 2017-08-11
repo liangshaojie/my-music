@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import {playMode} from './../common/js/config'
 import {shuffle} from './../common/js/util'
-import { savePlay} from './../common/js/cache'
+import { savePlay,deleteFavorite,saveFavorite} from './../common/js/cache'
 function findIndex(list, song) {
     return list.findIndex((item) => {
         return item.id === song.id
@@ -34,6 +34,13 @@ export const selectPlay = function ({commit, state}, {list, index}) {
 export const savePlayHistory = function ({commit}, song) {
     commit(types.SET_PLAY_HISTORY, savePlay(song))
 }
+export const deleteFavoriteList = function ({commit}, song) {
+    commit(types.SET_FAVORITE_LIST, deleteFavorite(song))
+}
+export const saveFavoriteList = function ({commit}, song) {
+    commit(types.SET_FAVORITE_LIST, saveFavorite(song))
+}
+
 
 
 

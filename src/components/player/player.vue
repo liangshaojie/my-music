@@ -59,20 +59,16 @@
                     <i :class="iconMode"></i>
                 </div>
                     <div class="icon i-left" :class="disableCls">
-                        <i class="icon-prev"></i>
-                        <!--<i @click="prev" class="icon-prev"></i>-->
+                        <i @click="prev" class="icon-prev"></i>
                     </div>
                     <div class="icon i-center" :class="disableCls">
-                        <i class="needsclick" :class="playIcon"></i>
-                        <!--<i class="needsclick" @click="togglePlaying" :class="playIcon"></i>-->
+                        <i class="needsclick" @click="togglePlaying" :class="playIcon"></i>
                     </div>
                     <div class="icon i-right" :class="disableCls">
-                        <i class="icon-next"></i>
-                        <!--<i @click="next" class="icon-next"></i>-->
+                        <i @click="next" class="icon-next"></i>
                     </div>
                     <div class="icon i-right">
-                        <i class="icon" :class="getFavoriteIcon(currentSong)"></i>
-                        <!--<i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>-->
+                        <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>
                     </div>
                 </div>
             </div>
@@ -80,6 +76,7 @@
         <audio ref="audio"
                :src="currentSong.url"
                @play="ready"
+               @pause="paused"
         >
         </audio>
     </div>
@@ -88,7 +85,9 @@
 <script type="text/ecmascript-6">
     import {mapGetters, mapMutations, mapActions} from 'vuex'
     import {playerMixin} from './../../common/js/mixin'
+    import {prefixStyle} from '../../common/js/dom'
 
+    const transform = prefixStyle('transform')
     export default {
         mixins: [playerMixin],
         data() {
@@ -127,23 +126,48 @@
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN'
             }),
+
+            next() {
+                if (!this.songReady) {
+                    return
+                }
+                if (this.playlist.length === 1) {
+                    this.loop()
+                    return
+                } else {
+                    let index = this.currentIndex + 1
+                    if (index === this.playlist.length) {
+                        index = 0
+                    }
+                    this.setCurrentIndex(index)
+                    if (!this.playing) {
+                        this.togglePlaying()
+                    }
+                }
+            },
             prev() {
-//                if (!this.songReady) {
-//                    return
-//                }
-//                if (this.playlist.length === 1) {
-//                    this.loop()
-//                    return
-//                } else {
-//                    let index = this.currentIndex - 1
-//                    if (index === -1) {
-//                        index = this.playlist.length - 1
-//                    }
-//                    this.setCurrentIndex(index)
-//                    if (!this.playing) {
-//                        this.togglePlaying()
-//                    }
-//                }
+                if (!this.songReady) {
+                    return
+                }
+                if (this.playlist.length === 1) {
+                    this.loop()
+                    return
+                } else {
+                    let index = this.currentIndex - 1
+                    if (index === -1) {
+                        index = this.playlist.length - 1
+                    }
+                    this.setCurrentIndex(index)
+                    if (!this.playing) {
+                        this.togglePlaying()
+                    }
+                }
+            },
+            paused() {
+                this.setPlayingState(false)
+                if (this.currentLyric) {
+                    this.currentLyric.stop()
+                }
             },
             back() {
                 this.setFullScreen(false)
@@ -164,6 +188,33 @@
                     len++
                 }
                 return num
+            },
+            togglePlaying() {
+                if (!this.songReady) {
+                    return
+                }
+                this.setPlayingState(!this.playing)
+                if (this.currentLyric) {
+                    this.currentLyric.togglePlay()
+                }
+            },
+            /**
+             * 计算内层Image的transform，并同步到外层容器
+             * @param wrapper
+             * @param inner
+             */
+            syncWrapperTransform (wrapper, inner) {
+                if (!this.$refs[wrapper]) {
+                    return
+                }
+                let imageWrapper = this.$refs[wrapper]
+                let image = this.$refs[inner]
+                let wTransform = getComputedStyle(imageWrapper)[transform]
+                let iTransform = getComputedStyle(image)[transform]
+                console.log('wTransform',wTransform);
+                console.log('iTransform',iTransform);
+                console.log(iTransform.concat(' ', wTransform));
+                imageWrapper.style[transform] = wTransform === 'none' ? iTransform : iTransform.concat(' ', wTransform)
             },
             ready() {
                 this.songReady = true
@@ -196,7 +247,23 @@
                     this.$refs.audio.play()
 //                    this.getLyric()
                 }, 1000)
-            }
+            },
+            playing(newPlaying) {
+                if (!this.songReady) {
+                    return
+                }
+                const audio = this.$refs.audio
+                this.$nextTick(() => {
+                    newPlaying ? audio.play() : audio.pause()
+                })
+                if (!newPlaying) {
+                    if (this.fullScreen) {
+                        this.syncWrapperTransform('imageWrapper', 'image')
+                    } else {
+                        this.syncWrapperTransform('miniWrapper', 'miniImage')
+                    }
+                }
+            },
         }
     }
 </script>
