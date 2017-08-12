@@ -49,8 +49,8 @@
                 <div class="progress-wrapper">
                     <span class="time time-l">{{format(currentTime)}}</span>
                     <div class="progress-bar-wrapper">
-                        <!--<progress-bar ref="progressBar" :percent="percent" @percentChange="onProgressBarChange"-->
-                                      <!--@percentChanging="onProgressBarChanging"></progress-bar>-->
+                        <progress-bar ref="progressBar" :percent="percent" @percentChange="onProgressBarChange"
+                                      @percentChanging="onProgressBarChanging"></progress-bar>
                     </div>
                     <span class="time time-r">{{format(currentSong.duration)}}</span>
                 </div>
@@ -86,9 +86,11 @@
     import {mapGetters, mapMutations, mapActions} from 'vuex'
     import {playerMixin} from './../../common/js/mixin'
     import {prefixStyle} from '../../common/js/dom'
+    import ProgressBar from './../../base/progress-bar/progress-bar'
 
     const transform = prefixStyle('transform')
     export default {
+        components:{ProgressBar},
         mixins: [playerMixin],
         data() {
             return {
@@ -113,6 +115,9 @@
             playIcon() {
                 return this.playing ? 'icon-pause' : 'icon-play'
             },
+            percent() {
+                return this.currentTime / this.currentSong.duration
+            }
         },
         created() {
             this.touch = {}
@@ -126,7 +131,22 @@
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN'
             }),
-
+            onProgressBarChanging (percent) {
+                this.currentTime = this.currentSong.duration * percent
+                if (this.currentLyric) {
+                    this.currentLyric.seek(this.currentTime * 1000)
+                }
+            },
+            onProgressBarChange(percent) {
+                const currentTime = this.currentSong.duration * percent
+                this.currentTime = this.$refs.audio.currentTime = currentTime
+                if (this.currentLyric) {
+                    this.currentLyric.seek(currentTime * 1000)
+                }
+                if (!this.playing) {
+                    this.togglePlaying()
+                }
+            },
             next() {
                 if (!this.songReady) {
                     return
