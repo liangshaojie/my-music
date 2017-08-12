@@ -4,8 +4,7 @@
                     @enter="enter"
                     @after-enter="afterEnter"
                     @leave="leave"
-                    @after-leave="afterLeave"
-        >
+                    @after-leave="afterLeave">
             <div class="normal-player" v-show="fullScreen">
                 <div class="background">
                     <img width="100%" height="100%" :src="currentSong.image">
