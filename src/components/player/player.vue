@@ -1,77 +1,85 @@
 <template>
     <div class="player" v-show="playlist.length>0">
-        <div class="normal-player" v-show="fullScreen">
-            <div class="background">
-                <img width="100%" height="100%" :src="currentSong.image">
-            </div>
-            <div class="top">
-                <div class="back" @click="back">
-                    <i class="icon-back"></i>
+        <transition name="normal"
+                    @enter="enter"
+                    @after-enter="afterEnter"
+                    @leave="leave"
+                    @after-leave="afterLeave"
+        >
+            <div class="normal-player" v-show="fullScreen">
+                <div class="background">
+                    <img width="100%" height="100%" :src="currentSong.image">
                 </div>
-                <h1 class="title" v-html="currentSong.name"></h1>
-                <h2 class="subtitle" v-html="currentSong.singer"></h2>
-            </div>
-            <div class="middle"
-                 @touchstart.prevent="middleTouchStart"
-                 @touchmove.prevent="middleTouchMove"
-                 @touchend="middleTouchEnd"
-            >
-                <div class="middle-l" ref="middleL">
-                    <div class="cd-wrapper" ref="cdWrapper">
-                        <div class="cd" ref="imageWrapper">
-                            <img ref="image" :class="cdCls" class="image" :src="currentSong.image">
+                <div class="top">
+                    <div class="back" @click="back">
+                        <i class="icon-back"></i>
+                    </div>
+                    <h1 class="title" v-html="currentSong.name"></h1>
+                    <h2 class="subtitle" v-html="currentSong.singer"></h2>
+                </div>
+                <div class="middle"
+                     @touchstart.prevent="middleTouchStart"
+                     @touchmove.prevent="middleTouchMove"
+                     @touchend="middleTouchEnd"
+                >
+                    <div class="middle-l" ref="middleL">
+                        <div class="cd-wrapper" ref="cdWrapper">
+                            <div class="cd" ref="imageWrapper">
+                                <img ref="image" :class="cdCls" class="image" :src="currentSong.image">
+                            </div>
+                        </div>
+                        <div class="playing-lyric-wrapper">
+                            <div class="playing-lyric">{{playingLyric}}</div>
                         </div>
                     </div>
-                    <div class="playing-lyric-wrapper">
-                        <div class="playing-lyric">{{playingLyric}}</div>
-                    </div>
-                </div>
-                <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
-                    <div class="lyric-wrapper">
-                        <div v-if="currentLyric">
-                            <p ref="lyricLine"
-                               class="text"
-                               :class="{'current': currentLineNum ===index}"
-                               v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
+                    <scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
+                        <div class="lyric-wrapper">
+                            <div v-if="currentLyric">
+                                <p ref="lyricLine"
+                                   class="text"
+                                   :class="{'current': currentLineNum ===index}"
+                                   v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
+                            </div>
+                            <div class="pure-music" v-show="isPureMusic">
+                                <p>{{pureMusicLyric}}</p>
+                            </div>
                         </div>
-                        <div class="pure-music" v-show="isPureMusic">
-                            <p>{{pureMusicLyric}}</p>
+                    </scroll>
+                </div>
+                <div class="bottom">
+                    <div class="dot-wrapper">
+                        <span class="dot" :class="{'active':currentShow==='cd'}"></span>
+                        <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
+                    </div>
+                    <div class="progress-wrapper">
+                        <span class="time time-l">{{format(currentTime)}}</span>
+                        <div class="progress-bar-wrapper">
+                            <progress-bar ref="progressBar" :percent="percent" @percentChange="onProgressBarChange"
+                                          @percentChanging="onProgressBarChanging"></progress-bar>
                         </div>
+                        <span class="time time-r">{{format(currentSong.duration)}}</span>
                     </div>
-                </scroll>
-            </div>
-            <div class="bottom">
-                <div class="dot-wrapper">
-                    <span class="dot" :class="{'active':currentShow==='cd'}"></span>
-                    <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
-                </div>
-                <div class="progress-wrapper">
-                    <span class="time time-l">{{format(currentTime)}}</span>
-                    <div class="progress-bar-wrapper">
-                        <progress-bar ref="progressBar" :percent="percent" @percentChange="onProgressBarChange"
-                                      @percentChanging="onProgressBarChanging"></progress-bar>
+                    <div class="operators">
+                        <div class="icon i-left" @click="changeMode">
+                        <i :class="iconMode"></i>
                     </div>
-                    <span class="time time-r">{{format(currentSong.duration)}}</span>
-                </div>
-                <div class="operators">
-                    <div class="icon i-left" @click="changeMode">
-                    <i :class="iconMode"></i>
-                </div>
-                    <div class="icon i-left" :class="disableCls">
-                        <i @click="prev" class="icon-prev"></i>
-                    </div>
-                    <div class="icon i-center" :class="disableCls">
-                        <i class="needsclick" @click="togglePlaying" :class="playIcon"></i>
-                    </div>
-                    <div class="icon i-right" :class="disableCls">
-                        <i @click="next" class="icon-next"></i>
-                    </div>
-                    <div class="icon i-right">
-                        <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>
+                        <div class="icon i-left" :class="disableCls">
+                            <i @click="prev" class="icon-prev"></i>
+                        </div>
+                        <div class="icon i-center" :class="disableCls">
+                            <i class="needsclick" @click="togglePlaying" :class="playIcon"></i>
+                        </div>
+                        <div class="icon i-right" :class="disableCls">
+                            <i @click="next" class="icon-next"></i>
+                        </div>
+                        <div class="icon i-right">
+                            <i @click="toggleFavorite(currentSong)" class="icon" :class="getFavoriteIcon(currentSong)"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </transition>
+        <playlist ref="playlist"></playlist>
         <transition name="mini">
             <div class="mini-player" v-show="!fullScreen" @click="open">
                 <div class="icon">
@@ -95,6 +103,7 @@
         </transition>
         <audio ref="audio"
                :src="currentSong.url"
+               @error="error"
                @play="ready"
                @pause="paused"
                @timeupdate="updateTime"
@@ -112,12 +121,13 @@
     import ProgressBar from './../../base/progress-bar/progress-bar'
     import ProgressCircle from '../../base/progress-circle/progress-circle'
     import Scroll from './../../base/scroll/scroll'
+    import animations from 'create-keyframe-animation'
     import Lyric from 'lyric-parser'
-
+    import Playlist from '../../components/playlist/playlist'
     const transform = prefixStyle('transform')
     const transitionDuration = prefixStyle('transitionDuration')
     export default {
-        components:{ProgressBar,Scroll,ProgressCircle},
+        components:{ProgressBar,Scroll,ProgressCircle,Playlist},
         mixins: [playerMixin],
         data() {
             return {
@@ -169,6 +179,67 @@
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN'
             }),
+            showPlaylist() {
+                this.$refs.playlist.show()
+            },
+            enter(el, done) {
+                const {x, y, scale} = this._getPosAndScale()
+                let animation = {
+                    0: {
+                        transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+                    },
+                    60: {
+                        transform: `translate3d(0,0,0) scale(1.2)`
+                    },
+                    100: {
+                        transform: `translate3d(0,0,0) scale(1)`
+                    }
+                }
+
+                animations.registerAnimation({
+                    name: 'move',
+                    animation,
+                    presets: {
+                        duration: 400,
+                        easing: 'linear'
+                    }
+                })
+
+                animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+            },
+            afterEnter() {
+                animations.unregisterAnimation('move')
+                this.$refs.cdWrapper.style.animation = ''
+            },
+            leave(el, done) {
+                this.$refs.cdWrapper.style.transition = 'all 0.4s'
+                const {x, y, scale} = this._getPosAndScale()
+                this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+                const timer = setTimeout(done, 400)
+                this.$refs.cdWrapper.addEventListener('transitionend', () => {
+                    clearTimeout(timer)
+                    done()
+                })
+            },
+            afterLeave() {
+                this.$refs.cdWrapper.style.transition = ''
+                this.$refs.cdWrapper.style[transform] = ''
+            },
+            _getPosAndScale() {
+                const targetWidth = 40
+                const paddingLeft = 40
+                const paddingBottom = 30
+                const paddingTop = 80
+                const width = window.innerWidth * 0.8
+                const scale = targetWidth / width
+                const x = -(window.innerWidth / 2 - paddingLeft)
+                const y = window.innerHeight - paddingTop - width / 2 - paddingBottom
+                return {
+                    x,
+                    y,
+                    scale
+                }
+            },
             middleTouchStart(e) {
                 this.touch.initiated = true
                 // 用来判断是否是一次移动
@@ -176,6 +247,9 @@
                 const touch = e.touches[0]
                 this.touch.startX = touch.pageX
                 this.touch.startY = touch.pageY
+            },
+            error() {
+                this.songReady = true
             },
             middleTouchMove(e) {
                 if (!this.touch.initiated) {
