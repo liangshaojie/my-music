@@ -10,6 +10,7 @@ const state = {
     playing: false,
     favoriteList: loadFavorite(),
     mode: playMode.sequence,
+    topList: {},
 }
 
 export default state
