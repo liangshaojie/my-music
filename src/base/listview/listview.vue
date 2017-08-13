@@ -28,15 +28,20 @@
             <div class="fixed-title">{{fixedTitle}} </div>
         </div>
         <div v-show="!data.length" class="loading-container">
-            <!--<loading></loading>-->
+            <loading></loading>
         </div>
     </scroll>
 </template>
 
 <script type="text/ecmascript-6">
     import Scroll from './../../base/scroll/scroll'
+    import {getData} from '../../common/js/dom'
+    import Loading from './../../base/loading/loading'
+
+    const TITLE_HEIGHT = 30
+    const ANCHOR_HEIGHT = 18
     export default {
-        components:{Scroll},
+        components:{Scroll,Loading},
         data() {
             return {
                 scrollY: -1,
@@ -70,9 +75,87 @@
             }
         },
         methods:{
+            selectItem(item) {
+                this.$emit('select', item)
+            },
             scroll(pos) {
                 this.scrollY = pos.y
             },
+            _calculateHeight() {
+                this.listHeight = []
+                const list = this.$refs.listGroup
+                let height = 0
+                this.listHeight.push(height)
+                for (let i = 0; i < list.length; i++) {
+                    let item = list[i]
+                    height += item.clientHeight
+                    this.listHeight.push(height)
+                }
+            },
+            refresh() {
+                this.$refs.listview.refresh()
+            },
+            onShortcutTouchStart(e) {
+                let anchorIndex = getData(e.target, 'index')
+                let firstTouch = e.touches[0]
+                this.touch.y1 = firstTouch.pageY
+                this.touch.anchorIndex = anchorIndex
+                this._scrollTo(anchorIndex)
+            },
+            onShortcutTouchMove(e) {
+                let firstTouch = e.touches[0]
+                this.touch.y2 = firstTouch.pageY
+                let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+                let anchorIndex = parseInt(this.touch.anchorIndex) + delta
+                this._scrollTo(anchorIndex)
+            },
+            _scrollTo(index) {
+                if (!index && index !== 0) {
+                    return
+                }
+                if (index < 0) {
+                    index = 0
+                } else if (index > this.listHeight.length - 2) {
+                    index = this.listHeight.length - 2
+                }
+                this.scrollY = -this.listHeight[index]
+                this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
+            }
+        },
+        watch:{
+            data() {
+                setTimeout(() => {
+                    this._calculateHeight()
+                }, 20)
+            },
+            scrollY(newY) {
+                const listHeight = this.listHeight
+                // 当滚动到顶部，newY>0
+                if (newY > 0) {
+                    this.currentIndex = 0
+                    return
+                }
+                // 在中间部分滚动
+                for (let i = 0; i < listHeight.length - 1; i++) {
+                    let height1 = listHeight[i]
+                    let height2 = listHeight[i + 1]
+                    if (-newY >= height1 && -newY < height2) {
+                        this.currentIndex = i
+                        this.diff = height2 + newY
+                        return
+                    }
+                }
+                // 当滚动到底部，且-newY大于最后一个元素的上限
+                this.currentIndex = listHeight.length - 2
+            },
+            diff(newVal) {
+                let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
+                if (this.fixedTop === fixedTop) {
+                    return
+                }
+                this.fixedTop = fixedTop
+                this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
+            }
         }
     }
 </script>
