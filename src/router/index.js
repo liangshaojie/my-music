@@ -35,6 +35,12 @@ const Rank = (resolve) => {
         resolve(module)
     })
 }
+const TopList = (resolve) => {
+    import('./../components/top-list/top-list').then((module) => {
+        resolve(module)
+    })
+}
+
 
 
 export default new Router({
@@ -70,6 +76,12 @@ export default new Router({
         {
             path: '/rank',
             component: Rank,
+            children: [
+                {
+                    path: ':id',
+                    component: TopList
+                }
+            ]
         },
     ]
 })
