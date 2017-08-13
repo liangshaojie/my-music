@@ -27,6 +27,9 @@ const mutations = {
     },
     [types.SET_FAVORITE_LIST](state, list) {
         state.favoriteList = list
-    }
+    },
+    [types.SET_SINGER](state, singer) {
+        state.singer = singer
+    },
 }
 export default mutations

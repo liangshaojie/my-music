@@ -1,6 +1,7 @@
 import {playMode} from './../common/js/config'
 import {loadFavorite} from './../common/js/cache'
 const state = {
+    singer: {},
     disc: {},
     playlist: [],
     sequenceList: [],

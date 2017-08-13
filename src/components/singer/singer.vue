@@ -1,7 +1,7 @@
 <template>
     <div class="singer" ref="singer">
         <list-view @select="selectSinger" :data="singers" ref="list"></list-view>
-        <!--<router-view></router-view>-->
+        <router-view></router-view>
     </div>
 </template>
 
@@ -10,6 +10,7 @@
     import {getSingerList} from './../../api/singer'
     import {ERR_OK} from './../../api/config'
     import Singer from './../../common/js/singer'
+    import {mapMutations} from 'vuex'
 
     const HOT_SINGER_LEN = 10
     const HOT_NAME = '热门'
@@ -24,11 +25,14 @@
             this._getSingerList()
         },
         methods:{
+            ...mapMutations({
+                setSinger: 'SET_SINGER'
+            }),
             selectSinger(singer){
                 this.$router.push({
                     path: `/singer/${singer.id}`
                 })
-//                this.setSinger(singer)
+                this.setSinger(singer)
             },
             _getSingerList(){
                 getSingerList().then((res) => {

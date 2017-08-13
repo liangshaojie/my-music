@@ -9,3 +9,4 @@ export const currentSong = (state) => {
 }
 export const fullScreen = state => state.fullScreen
 export const playing = state => state.playing
+export const singer = state => state.singer
