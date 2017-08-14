@@ -59,3 +59,6 @@ export function deleteFavorite(song) {
     storage.set(FAVORITE_KEY, songs)
     return songs
 }
+export function loadSearch() {
+    return storage.get(SEARCH_KEY, [])
+}

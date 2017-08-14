@@ -11,3 +11,4 @@ export const fullScreen = state => state.fullScreen
 export const playing = state => state.playing
 export const singer = state => state.singer
 export const topList = state => state.topList
+export const searchHistory = state => state.searchHistory

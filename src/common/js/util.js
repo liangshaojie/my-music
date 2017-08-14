@@ -12,3 +12,16 @@ export function shuffle(arr) {
     }
     return _arr
 }
+
+//用户延迟一个方法的执行
+export function debounce(func, delay) {
+    let timer
+    return function (...args) {
+        if (timer) {
+            clearTimeout(timer)
+        }
+        timer = setTimeout(() => {
+            func.apply(this, args)
+        }, delay)
+    }
+}

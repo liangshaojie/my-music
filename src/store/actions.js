@@ -70,6 +70,10 @@ export const deleteSongList = function ({commit}) {
     commit(types.SET_PLAYING_STATE, false)
 }
 
+export const clearSearchHistory = function ({commit}) {
+    commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
 
 
 

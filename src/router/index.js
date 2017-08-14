@@ -40,6 +40,12 @@ const TopList = (resolve) => {
         resolve(module)
     })
 }
+const Search = (resolve) => {
+    import('./../components/search/search').then((module) => {
+        resolve(module)
+    })
+}
+
 
 
 
@@ -82,6 +88,10 @@ export default new Router({
                     component: TopList
                 }
             ]
+        },
+        {
+            path: '/search',
+            component: Search
         },
     ]
 })
