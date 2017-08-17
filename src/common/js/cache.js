@@ -62,3 +62,12 @@ export function deleteFavorite(song) {
 export function loadSearch() {
     return storage.get(SEARCH_KEY, [])
 }
+
+export function saveSearch(query) {
+    let searches = storage.get(SEARCH_KEY, [])
+    insertArray(searches, query, (item) => {
+        return item === query
+    }, SEARCH_MAX_LEN)
+    storage.set(SEARCH_KEY, searches)
+    return searches
+}
