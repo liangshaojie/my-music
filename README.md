@@ -27,4 +27,9 @@ npm test
 111111
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+66666
+55555
+88888888888888888888
+11111111
+
 
