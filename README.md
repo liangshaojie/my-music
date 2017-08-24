@@ -17,8 +17,8 @@ npm run build
 # build for production and view the bundle analyzer report
 npm run build --report
 
-# run e2e tests
-npm run e2e
+787878787878
+56565656565656
 
 # run all tests
 npm test
@@ -28,7 +28,7 @@ npm test
 
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
-2222222222
-3333333333
+7878787878787878
+89898989898989898
 
 
