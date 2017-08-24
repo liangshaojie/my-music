@@ -33,11 +33,10 @@
     </scroll>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
     import Scroll from './../../base/scroll/scroll'
     import {getData} from '../../common/js/dom'
     import Loading from './../../base/loading/loading'
-
     const TITLE_HEIGHT = 30
     const ANCHOR_HEIGHT = 18
     export default {
