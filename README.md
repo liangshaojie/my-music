@@ -34,6 +34,5 @@ For detailed explanation on how things work, checkout the [guide](http://vuejs-t
 9999999
 5555555
 3333333
-
 22222222
 
